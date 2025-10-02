@@ -1,6 +1,7 @@
 # Backend/main.py
 from fastapi import FastAPI,Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.wsgi import WSGIMiddleware
 
 # Import routers and helper functions from your modules
 from models.Eye_track.app import eye_router, get_eye_result

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
-export default function AboutDyslexia() {
+export default function Ab() {
   return (
     <div className="min-h-screen bg-[#E8C39E]">
       {/* Navbar */}
@@ -62,14 +62,6 @@ export default function AboutDyslexia() {
           </div>
 
           {/* Learn More Button */}
-          <div className="w-full flex justify-center mt-8">
-            <Link
-              to="/ab"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition"
-            >
-              Learn More
-            </Link>
-          </div>
         </div>
       </div>
     </div>

@@ -101,10 +101,41 @@ def calculate_stats(expected, actual):
         "dysgraphia_risk": dysgraphia_risk
     }
 
-@app.route('/')
-def home():
-    """Serves the main page."""
-    return render_template('index.html')
+@app.route('/hand', methods=['POST'])
+def analyze_handwriting():
+    file = request.files.get("file")
+    expected = request.form.get("expected", "").strip()
+    name = request.form.get("name", "")
+
+    if not file or not expected:
+        return jsonify({"error": "File and expected sentence required"}), 400
+
+    # Save the uploaded file temporarily
+    filename = secure_filename(file.filename)
+    temp_path = os.path.join("temp_" + filename)
+    file.save(temp_path)
+
+    # OCR
+    ocr_results = reader.readtext(temp_path, detail=0)
+    os.remove(temp_path)
+
+    actual = " ".join(ocr_results).strip()
+    if not actual:
+        return jsonify({"error": "OCR failed to recognize text"}), 400
+
+    # Calculate metrics
+    stats = calculate_stats(expected, actual)
+
+    # Return all data for the frontend / report
+    result = {
+        "name": name,
+        "expected": expected,
+        "ocr_output": actual,
+        **stats
+    }
+
+    return jsonify(result)
+
 
 @app.route('/ocr-compare', methods=['POST'])
 def ocr_compare():

@@ -8,7 +8,7 @@ import EyeSpeech from './pages/EyeSpeech';
 import DyslexiaQuiz from './pages/Quiz';
 import DyslexiaSupport from './pages/Solution';
 import AboutDyslexia from './pages/About';
-
+import Ab from "./pages/about2"
 const App = () => {
   const [theme, setTheme] = useState('light');
 
@@ -34,6 +34,7 @@ const App = () => {
         <Route path="/quiz" element={<DyslexiaQuiz theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/sol" element={<DyslexiaSupport theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/about" element={<AboutDyslexia theme={theme} toggleTheme={toggleTheme} />} />
+         <Route path="/ab" element={<Ab theme={theme} toggleTheme={toggleTheme} />} />
       </Routes>
     </BrowserRouter>
   );

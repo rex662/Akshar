@@ -10,8 +10,8 @@ const HOME = () => {
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `
-            repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 20px),
-            repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 20px)
+            repeating-linear-gradient(15deg, rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 20px),
+            repeating-linear-gradient(-15deg, rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 20px)
           `,
           backgroundSize: "40px 40px",
         }}
@@ -25,10 +25,10 @@ const HOME = () => {
         {/* Hero Section */}
         <section className="w-full flex flex-col items-center px-6 py-12">
           <div className="text-center mb-6">
-            <h1 className=" focus-in-expand-normal   text-black-800 text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-snug">
+            <h1 className=" focus-in-expand-normal   text-black-800 text-4xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-snug">
               WELCOME TO AKSHAR MITR
             </h1>
-            <h2 className="focus-in-expand-normal font-PlayfairDisplay text-zinc-800 text-xl sm:text-2xl md:text-2xl lg:text-2xl italic font-medium mt-4">
+            <h2 className="focus-in-expand-normal font-PlayfairDisplay text-red-600 text-xl sm:text-2xl md:text-2xl lg:text-2xl italic font-medium mt-4">
               "Dyslexia doesn’t define intelligence—it redefines learning. Explore resources,
               tools, and support to help every individual thrive in school, work, and life."
             </h2>
@@ -37,7 +37,7 @@ const HOME = () => {
 
         {/* About Section */}
         <section id="about-us" className="px-6 py-8">
-          <h1 className="floating-text  text-black-800 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center leading-snug max-w-4xl mx-auto">
+          <h1 className="floating-text  text-black-800 text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-extrabold text-center leading-snug max-w-4xl mx-auto">
             AKSHAR MITR
           </h1>
           <p className=" text-black-400 font-PlayfairDisplay text-base sm:text-lg md:text-xl font-medium text-center mt-6 italic mx-auto leading-relaxed">

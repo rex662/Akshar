@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "material-icons/iconfont/material-icons.css";
 import "./Handwriting.css";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom"; // corrected import
+import { useNavigate } from "react-router-dom";
 
 const Handwriting = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
@@ -11,13 +11,12 @@ const Handwriting = ({ theme, toggleTheme }) => {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  // Handle file upload
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // Handle Analyze button
   const handleAnalyze = async () => {
     if (!file) {
       alert("Please upload your handwriting image first.");
@@ -26,23 +25,43 @@ const Handwriting = ({ theme, toggleTheme }) => {
 
     setLoading(true);
     setResult(null);
+    const referenceSentence = "the quick brown fox jumps over the lazy dog";
+const userName = childName || "Anonymous";
+
 
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("name", childName);
+      formData.append("expected", referenceSentence);
+formData.append("name", userName);
 
-      const response = await fetch("http://localhost:8000/hand", {
+      const response = await fetch("http://localhost:8000/hand/hand", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Error analyzing handwriting");
-      }
+      if (!response.ok) throw new Error("Error analyzing handwriting");
 
-      const data = await response.json();
-      setResult(data);
+      const ocrData = await response.json();
+      setResult(ocrData);
+      setShowModal(true);
+
+      await fetch("http://localhost:8000/hand/generate-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: userName,
+          expected: ocrData.expected,
+          ocr_output: ocrData.ocr_output,
+          char_error_rate: ocrData.char_error_rate,
+          word_error_rate: ocrData.word_error_rate,
+          substitutions: ocrData.substitutions,
+          insertions: ocrData.insertions,
+          deletions: ocrData.deletions,
+          reversed_letters: ocrData.reversed_letters,
+          dysgraphia_risk: ocrData.dysgraphia_risk
+        })
+      });
     } catch (error) {
       console.error(error);
       alert("Failed to analyze handwriting. Please try again.");
@@ -51,7 +70,6 @@ const Handwriting = ({ theme, toggleTheme }) => {
     }
   };
 
-  // Download report
   const handleDownloadReport = () => {
     if (!result) return;
 
@@ -135,6 +153,7 @@ const Handwriting = ({ theme, toggleTheme }) => {
                     Upload a picture of your handwriting to see how you're doing.
                   </p>
 
+                  {/* THIS IS YOUR ORIGINAL BLOCK */}
                   <div className="mb-10 text-center w-full max-w-2xl mx-auto">
                     <label
                       htmlFor="reference-sentence"
@@ -170,36 +189,8 @@ const Handwriting = ({ theme, toggleTheme }) => {
                       {loading ? "Analyzing..." : "Analyze Now"}
                     </button>
                   </div>
-
-                  {/* Results */}
-                  {result && (
-                    <div className="mt-8 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-xl mx-auto">
-                      <h3 className="text-xl font-bold mb-3 text-[var(--accent-color-1)]">
-                        Analysis Result
-                      </h3>
-                      <pre className="text-left text-sm bg-gray-100 dark:bg-gray-700 p-3 rounded overflow-x-auto">
-                        {JSON.stringify(result, null, 2)}
-                      </pre>
-
-                      <button
-                        onClick={handleDownloadReport}
-                        className="storybook-button bg-[var(--accent-color-2)] mt-4"
-                      >
-                        Download Report
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
-
-              {/* Binding stitches */}
-              <div className="page-binding">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className="stitch"></div>
-                ))}
-              </div>
-
-              <div className="book-spine"></div>
             </div>
           </div>
         </div>
@@ -212,6 +203,92 @@ const Handwriting = ({ theme, toggleTheme }) => {
           <span className="material-icons">arrow_forward_ios</span>
         </button>
       </div>
+
+      {/* Modal Popup */}
+      {showModal && result && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-12">
+          <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setShowModal(false)}></div>
+
+          <div className="relative bg-white shadow-lg rounded-lg w-11/12 max-w-3xl p-6 overflow-y-auto max-h-[80vh]">
+            {/* REPORT CONTENT */}
+            <div id="header">
+              <h1>Dysgraphia Indicator Report</h1>
+              <div className="subtitle">{new Date().toLocaleString()}</div>
+            </div>
+
+            {/* Risk */}
+           {/* Risk */}
+{(() => {
+  let riskClass = "low";
+  if (result.dysgraphia_risk?.includes("High")) riskClass = "high";
+  else if (result.dysgraphia_risk?.includes("Moderate")) riskClass = "moderate";
+
+  return (
+    <div className={`section highlight-${riskClass}`}>
+      <h2 className="section-title">Screening Result</h2>
+      <p className="prediction-text">{result.dysgraphia_risk || "Not Available"}</p>
+    </div>
+  );
+})()}
+
+
+            {/* Sample Details */}
+            <div className="section">
+              <h2 className="section-title">Submitted Sample Details</h2>
+              <strong>Reference Sentence:</strong>
+              <p className="text-block">{result.expected}</p>
+              <strong>Recognized (OCR) Sentence:</strong>
+              <p className="text-block">{result.ocr_output}</p>
+            </div>
+
+            {/* Handwriting Metrics */}
+            <div className="section">
+              <h2 className="section-title">Handwriting Analysis Metrics</h2>
+              <ul className="stats-grid">
+                <li>
+                  <span className="label">Char Error Rate</span>
+                  <span className="value">{result.char_error_rate}</span>
+                </li>
+                <li>
+                  <span className="label">Word Error Rate</span>
+                  <span className="value">{result.word_error_rate}</span>
+                </li>
+                <li>
+                  <span className="label">Substitutions</span>
+                  <span className="value">{result.substitutions}</span>
+                </li>
+                <li>
+                  <span className="label">Insertions</span>
+                  <span className="value">{result.insertions}</span>
+                </li>
+                <li>
+                  <span className="label">Deletions</span>
+                  <span className="value">{result.deletions}</span>
+                </li>
+                <li>
+                  <span className="label">Reversed Letters</span>
+                  <span className="value">{result.reversed_letters}</span>
+                </li>
+              </ul>
+            </div>
+
+            <div id="footer">
+              <div className="disclaimer">
+                <strong>Disclaimer:</strong> This report is generated by an automated tool designed to identify potential indicators associated with dysgraphia. It is not a substitute for a professional diagnosis. The results should be used for informational and screening purposes only.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button className="storybook-button bg-blue-600 text-white" onClick={handleDownloadReport}>
+                Download Report
+              </button>
+              <button className="storybook-button bg-gray-400 text-white" onClick={() => setShowModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
