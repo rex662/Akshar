@@ -33,19 +33,22 @@ async def combined_result(req: Request):
     try:
         data = await req.json()
         eye_score = float(data.get("eye_score", 0))
-        speech_score =float( data.get("speech_score", 0))
+        speech_score = float(data.get("speech_score", 0))
 
         # Simple average for combined score
         combined_score = (eye_score + speech_score) / 2
+        combined_label = "🧠 Dyslexic" if combined_score > 0.5 else "✔️ Typical"
 
         return {
             "eye_score": eye_score,
             "speech_score": speech_score,
-            "combined": round(combined_score, 2)
+            "combined": round(combined_score, 2),
+            "label": combined_label
         }
 
     except Exception as e:
         return {"error": str(e)}
+
 
 
 # ── Run using Uvicorn ─────────────────────────────────────────────

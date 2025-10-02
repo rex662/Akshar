@@ -7,7 +7,7 @@ from flask_cors import CORS
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
 from models.speech.feature_extraction import compute_features, rule_based_predict  # your feature extraction logic
-
+import numpy as np
 # -------------------- Flask Setup --------------------
 flask_app = Flask(__name__, static_folder="static")
 CORS(flask_app)  # allow cross-origin requests
@@ -83,6 +83,7 @@ async def upload_audio_fastapi(file: UploadFile = File(...)):
         result = process_audio(audio_path)
         speech_last_result = result
 
+        result = convert_numpy_types(result)
         # Clean up temp file
         os.remove(audio_path)
         return result
@@ -97,3 +98,17 @@ def get_speech_result():
     """
     global speech_last_result
     return speech_last_result or {"prediction": 0.0, "error": "No speech recorded yet"}
+def convert_numpy_types(obj):
+    """
+    Recursively convert numpy types to native Python types
+    """
+    if isinstance(obj, dict):
+        return {k: convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(i) for i in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    else:
+        return obj

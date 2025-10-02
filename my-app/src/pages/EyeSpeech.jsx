@@ -1,4 +1,3 @@
-// src/pages/EyeSpeech.js
 import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -19,9 +18,8 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
 
-  // ------------------- Helper: Manage Webgazer Script --------------------
+  // ------------------- Helper: Manage Webgazer Script (UNCHANGED) --------------------
   useEffect(() => {
-    // Check if webgazer is already loaded (useful for hot-reloading)
     if (window.webgazer) {
       window.webgazer.clearGazeListener();
       window.webgazer.end();
@@ -31,9 +29,7 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
     script.src = "https://webgazer.cs.brown.edu/webgazer.js";
     script.async = true;
 
-    // Use onload to ensure webgazer is available before trying to use it
     script.onload = () => {
-      // webgazer is now available on window.webgazer
       console.log("WebGazer script loaded.");
     };
 
@@ -48,7 +44,7 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
     };
   }, []);
 
-  // ------------------- Eye Tracking Control --------------------
+  // ------------------- Eye Tracking Control (UNCHANGED) --------------------
 
   const startEyeTracking = async () => {
     if (!window.webgazer) {
@@ -57,27 +53,24 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
     }
 
     try {
-      // 1. Get camera stream
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
 
-      // 2. Configure and start WebGazer
       window.webgazer.setGazeListener((data) => {
           if (data) {
             setGazePoints((prev) => {
-              // Keep the last 100 points
               const newPoints = [...prev, [data.x, data.y]];
               return newPoints.length > 100 ? newPoints.slice(newPoints.length - 100) : newPoints;
             });
           }
         })
         .begin()
-        .catch(err => console.error("WebGazer start error:", err)); // Catches errors from begin()
+        .catch(err => console.error("WebGazer start error:", err)); 
 
       setIsEyeTrackerRunning(true);
-      setEyeResult(null); // Clear previous result
+      setEyeResult(null); 
     } catch (err) {
       console.error("Camera access error:", err);
       alert("Could not access camera. Please check permissions.");
@@ -91,7 +84,6 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
       window.webgazer.end();
     }
 
-    // Stop all tracks on the video element's stream
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
       tracks.forEach((track) => track.stop());
@@ -99,18 +91,15 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
     }
 
     setIsEyeTrackerRunning(false);
-    // Clearing gazePoints after stopping
-    // setGazePoints([]); 
   };
   
   const sendEyeData = async () => {
-    // Ensure eye tracking is stopped before sending data
     stopEyeTracking();
     
-    // Ensure we have points to send
     if (gazePoints.length === 0) {
-        setEyeResult({ error: "No gaze data recorded. Start the game first." });
-        return { error: "No gaze data recorded. Start the game first." };
+        const errorResult = { error: "No gaze data recorded. Start the game first." };
+        setEyeResult(errorResult);
+        return errorResult;
     }
 
     try {
@@ -122,83 +111,108 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
       const data = await res.json();
       setEyeResult(data);
       return data;
-    } catch {
-      const err = { error: "Eye API not reachable" };
+    } catch (e) {
+      const err = { error: `Eye API not reachable: ${e.message}` };
       setEyeResult(err);
       return err;
     }
   };
 
-  // ------------------- Speech Recording --------------------
-  const startRecording = async () => {
-    if(recordingSpeech) return; // Prevent double click
-    
-    audioChunksRef.current = [];
-    setRecordingSpeech(true);
-    setSpeechResult(null); // Clear previous result
-    setAudioUrl(null); // Clear previous audio
+  // ------------------- Speech Recording (FINAL VERSION) --------------------
+ const startRecording = async () => {
+  if (recordingSpeech) return;
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: "audio/webm; codecs=opus",
-      });
+  // 1. Browser support check
+  if (typeof MediaRecorder === "undefined") {
+    alert("MediaRecorder API not supported. Use Chrome/Firefox.");
+    return;
+  }
 
-      // Keep a reference to the stream to stop it later
-      mediaRecorderRef.current.stream = stream;
+  setRecordingSpeech(true);
+  setSpeechResult(null);
+  setAudioUrl(null);
+  audioChunksRef.current = [];
 
-      mediaRecorderRef.current.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-
-      mediaRecorderRef.current.onstop = async () => {
-        setRecordingSpeech(false);
-        // Stop all tracks on the microphone stream
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-        
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        setAudioUrl(URL.createObjectURL(blob));
-
-        const formData = new FormData();
-        formData.append("file", blob, "reading.webm");
-        formData.append(
-          "text",
-          "The quick brown fox jumps over the lazy dog."
-        );
-
-        try {
-          const res = await fetch("http://127.0.0.1:8000/speech/result", {
-            method: "POST",
-            body: formData,
-          });
-          const data = await res.json();
-          setSpeechResult(data);
-        } catch {
-          setSpeechResult({
-            prediction: 0,
-            error: "Speech API not reachable",
-          });
-        }
-      };
-
-      mediaRecorderRef.current.start();
-
-      // Auto-stop after 10 seconds
-      setTimeout(() => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-          mediaRecorderRef.current.stop();
-        }
-      }, 10000);
-    } catch (err) {
-      console.error("Microphone access error:", err);
-      setRecordingSpeech(false);
-      alert("Could not access microphone. Please check permissions.");
+  try {
+    // 2. Check microphone availability
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    if (!devices.some((d) => d.kind === "audioinput")) {
+      throw new Error("No microphone detected. Please enable or connect one.");
     }
-  };
-  
-  // ------------------- Combined Result --------------------
+
+    // 3. Request permission
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    console.log("🎙️ Microphone stream started");
+
+    // 4. Pick safe mime type
+    let options = { mimeType: "audio/webm; codecs=opus" };
+    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+      options = { mimeType: "audio/webm" };
+    }
+    const recorder = new MediaRecorder(stream, options);
+    mediaRecorderRef.current = recorder;
+
+    // 5. Collect audio chunks
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) audioChunksRef.current.push(e.data);
+    };
+
+    // 6. On stop → send to backend
+    recorder.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      setRecordingSpeech(false);
+
+      if (audioChunksRef.current.length === 0) {
+        setSpeechResult({ prediction: 0, error: "No sound recorded." });
+        return;
+      }
+
+      const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+      setAudioUrl(URL.createObjectURL(blob));
+
+      const formData = new FormData();
+      formData.append("file", blob, "reading.webm"); // ✅ FastAPI expects "file"
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/speech/result", {
+          method: "POST",
+          body: formData,
+        });
+
+        let data = await res.json();
+
+        // 🔥 Frontend fix: ensure numpy values become plain JS
+        const safeData = JSON.parse(JSON.stringify(data));
+
+        setSpeechResult(safeData);
+      } catch (e) {
+        setSpeechResult({
+          prediction: 0,
+          error: `Speech API not reachable: ${e.message}`,
+        });
+      }
+    };
+
+    // 7. Start recording
+    recorder.start();
+
+    // Auto-stop after 10 seconds
+    setTimeout(() => {
+      if (recorder.state === "recording") recorder.stop();
+    }, 10000);
+  } catch (err) {
+    console.error("❌ Microphone access error:", err);
+    setRecordingSpeech(false);
+    alert(
+      `Microphone error: ${
+        err.name || err.message
+      }\n👉 Allow mic access in browser (Site Settings → Microphone → Allow).`
+    );
+  }
+};
+
+  // ------------------- Combined Result (UNCHANGED LOGIC) --------------------
   const getCombinedResult = async (eyeData) => {
-    // Use eyeData if passed, otherwise use state, otherwise try to send the data
     const eye = eyeData || eyeResult || (await sendEyeData());
     
     if (!speechResult || speechResult.error) {
@@ -209,8 +223,8 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
     }
     
     if (eye.error) {
-        if (!combinedResult || combinedResult.error !== "Eye data not available or API error.") {
-            setCombinedResult({ error: eye.error }); // Use the actual eye error
+        if (!combinedResult || combinedResult.error !== eye.error) {
+            setCombinedResult({ error: eye.error });
         }
         return;
     }
@@ -226,19 +240,19 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
       });
       const data = await res.json();
       setCombinedResult(data);
-    } catch {
-      setCombinedResult({ error: "Combined API not reachable" });
+    } catch (e) {
+      setCombinedResult({ error: `Combined API not reachable: ${e.message}` });
     }
   };
 
-  // ------------------- Auto trigger combined result --------------------
+  // ------------------- Auto trigger combined result (UNCHANGED) --------------------
   useEffect(() => {
     if (speechResult && !speechResult.error) {
         getCombinedResult();
     }
   }, [speechResult, eyeResult]); 
 
-  // ------------------- JSX --------------------
+  // ------------------- JSX (UNCHANGED) --------------------
   return (
     <div className="flex flex-col">
       <Navbar theme={theme} toggleTheme={toggleTheme} />
@@ -251,12 +265,10 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
           `,
           backgroundSize: "32px 32px",
         }}
-        // ADJUSTED: Added flex classes to center content vertically and horizontally
-        className="playbook-bg min-h-screen p-6 font-sans pt-[80px] gap-4 dark:bg-zinc-800 flex flex-col justify-center items-center"
+        className="playbook-bg min-h-screen p-6 font-sans pt-[30px] gap-4 dark:bg-zinc-800 flex flex-col justify-center items-center"
       >
         <div
-          // ADJUSTED: max-w-7xl for increased width. min-h-fit to respect the vh below.
-          className="w-full max-w-9xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 relative min-h-fit lg:min-h-[90vh]"
+          className="w-full max-w-9xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 relative min-h-fit lg:min-h-[60vh]"
           style={{
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             borderRadius: "12px",
@@ -291,7 +303,7 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  muted // Mute video feed to avoid echo issues
+                  muted
                   className="w-full aspect-video bg-gray-200 rounded-lg flex items-center justify-center text-gray-300 dark:text-gray-400 object-cover"
                 >
                   <p>CAMERA FEED</p>
@@ -408,18 +420,24 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
                     )}
                   </span>
                 </div>
-                <div className="p-4 bg-white rounded-lg shadow-md">
-                  <strong className="font-bold text-xl text-green-700 mb-1">Combined Score:</strong>
-                  <span className="font-semibold text-2xl text-gray-800 block mt-1">
-                    {combinedResult?.error ? (
-                        <span className="text-red-500">{combinedResult.error}</span>
-                    ) : combinedResult?.combined !== undefined ? (
-                        <span className="text-purple-600">{combinedResult.combined.toFixed(2)}</span>
-                    ) : (
-                        "Awaiting both results..."
-                    )}
-                  </span>
-                </div>
+               <div className="p-4 bg-white rounded-lg shadow-md">
+  <strong className="font-bold text-xl text-green-700 mb-1">Combined Score:</strong>
+  <span className="font-semibold text-2xl text-gray-800 block mt-1">
+    {combinedResult?.error ? (
+      <span className="text-red-500">{combinedResult.error}</span>
+    ) : combinedResult?.combined !== undefined ? (
+      <>
+        <span className="text-purple-600">{combinedResult.combined.toFixed(2)}</span>
+        <span className="block mt-2 text-xl">
+          {combinedResult.label}
+        </span>
+      </>
+    ) : (
+      "Awaiting both results..."
+    )}
+  </span>
+</div>
+
               </div>
             </div>
             <div>
@@ -434,7 +452,7 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
             </div>
           </div>
         </div>
-         <button 
+          <button 
             onClick={() => navigate("/handwriting")}
             className="page-turn-btn absolute bottom-6 right-6 p-4 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition" 
             id="turn-page-btn"
