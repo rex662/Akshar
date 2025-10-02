@@ -107,7 +107,7 @@ formData.append("name", userName);
 
       {/* Content */}
       <div className="relative z-10">
-        <Navbar theme={theme} toggleTheme={toggleTheme} />
+        <Navbar />
         <div className="flex items-center justify-center min-h-screen px-4 sm:px-6">
           <div className="book-container max-w-[90vw] h-auto">
             <div className="book" id="book">

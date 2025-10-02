@@ -22,8 +22,45 @@ const questions = [
       { text: "Constant trouble", emoji: "😣", score: 3 },
     ],
   },
-  // Add the rest of your questions in the same format, including score per option
+    {
+    question: "Does the child mix up letters like b/d or p/q while reading or writing?",
+    options: [
+      { text: "Never", emoji: "🙅", score: 0 },
+      { text: "Sometimes", emoji: "🤷", score: 1 },
+      { text: "Often", emoji: "🔄", score: 2 },
+      { text: "Always", emoji: "♻️", score: 3 },
+    ],
+  },
+  {
+    question: "Does the child read much more slowly than peers?",
+    options: [
+      { text: "Not at all", emoji: "⚡", score: 0 },
+      { text: "A little slower", emoji: "🚶", score: 1 },
+      { text: "Quite slow", emoji: "🐢", score: 2 },
+      { text: "Extremely slow", emoji: "⏳", score: 3 },
+    ],
+  },
+  {
+    question: "Does the child struggle to spell even simple words correctly?",
+    options: [
+      { text: "Rarely misspells", emoji: "✍️", score: 0 },
+      { text: "Occasionally", emoji: "📝", score: 1 },
+      { text: "Frequently", emoji: "📉", score: 2 },
+      { text: "Always", emoji: "🚨", score: 3 },
+    ],
+  },
+  {
+    question: "Does the child avoid reading activities because they feel difficult?",
+    options: [
+      { text: "Loves reading", emoji: "📚", score: 0 },
+      { text: "Sometimes avoids", emoji: "😐", score: 1 },
+      { text: "Often avoids", emoji: "🙁", score: 2 },
+      { text: "Always avoids", emoji: "🚫", score: 3 },
+    ],
+  },
 ];
+  
+
 
 const getResultMessage = (score) => {
   if (score <= 6) return "🟢 Unlikely Dyslexia – No significant signs.";

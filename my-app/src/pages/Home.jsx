@@ -23,30 +23,18 @@ const HOME = () => {
         <Navbar />
 
         {/* Hero Section */}
-        <section className="w-full flex flex-col items-center px-6 py-12">
-          <div className="text-start mb-6">
-            <h1
-              className="floating-text text-black font-extrabold text-center uppercase 
-               text-[80px] sm:text-[80px] md:text-[100px] lg:text-[180px] 
-               leading-tight tracking-tigh"
-            >
-              WELCOME TO AKSHAR MITRA
-            </h1>
-
-            <h2 className="font-PlayfairDisplay text-red-600 text-xl sm:text-xl md:text-2xl lg:text-2xl italic font-medium mt-4 max-w-8xl text-start">
-              "Dyslexia doesn’t define intelligence—it redefines learning.
-              Explore resources, tools, and support to help every individual
-              thrive in school, work, and life."
-            </h2>
-          </div>
-        </section>
+       
 
         {/* About Section */}
         <section id="about-us" className="px-6 py-8">
-          <h1 className="floating-text  text-black-800 text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-extrabold text-center leading-snug max-w-4xl mx-auto">
-            AKSHAR MITRA
-          </h1>
-          <p className=" text-black-400 font-PlayfairDisplay text-base sm:text-lg md:text-xl font-medium text-center mt-6 italic mx-auto leading-snug">
+          <h1
+              className="floating-text text-black font-bold text-center uppercase 
+             text-[80px] sm:text-[100px] md:text-[120px] lg:text-[160px] 
+             leading-tight tracking-tight 
+             [text-shadow:_2px_2px_2px_black,_0_0_10px_rgba(0,0,0,0.2)]"
+            > AKSHAR MITRA
+            </h1>
+          <p className=" text-black-400 font-PlayfairDisplay text-base sm:text-lg md:text-xl font-medium text-center mt-3 italic mx-auto leading-snug font-bold">
             At Akshar Mitra, we believe that every child deserves the right
             support to learn, grow, and thrive—no matter their learning
             challenges. Our mission is to make early detection and personalized

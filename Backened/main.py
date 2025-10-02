@@ -7,6 +7,7 @@ from fastapi.middleware.wsgi import WSGIMiddleware
 from models.Eye_track.app import eye_router, get_eye_result
 from models.speech.app import speech_router
 from models.Handwriting.app import app as handwriting_flask_app
+from models.Syllable import syllable_router
 # Initialize FastAPI app
 app = FastAPI(title="Dyslexia Detection Backend")
 
@@ -23,6 +24,7 @@ app.add_middleware(
 app.include_router(eye_router, prefix="/eye", tags=["Eye Tracking"])
 app.include_router(speech_router, prefix="/speech", tags=["Speech Analysis"])
 app.mount("/hand", WSGIMiddleware(handwriting_flask_app))
+app.include_router(syllable_router,prefix="/split", tags=["Spyllable Analysis"])
 # ── Combined Endpoint ──────────────────────────────────────────────
 @app.post("/combined-result")
 async def combined_result(req: Request):

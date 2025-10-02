@@ -1,4 +1,5 @@
 /* Global Variables */
+
 :root {
   --color-primary: #3b82f6;
   --color-primary-dark: #2563eb;
@@ -144,4 +145,11 @@ body {
   border-radius: var(--radius-lg);
   margin-top: 0.5rem;
   white-space: pre-wrap;
+}
+
+.dyslexia-font {
+  font-family: 'Baloo 2', Arial, sans-serif;
+}
+.app-container {
+  transition: font 0.3s ease;
 }

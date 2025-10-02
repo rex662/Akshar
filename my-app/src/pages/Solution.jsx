@@ -62,26 +62,23 @@ export default function DyslexiaSupport() {
     setCurrentLine((prev) => (prev + 1) % lines.length);
   };
 
-  const getSyllables = async () => {
-    const text = syllableInput.trim();
-    const words = text ? text.split(/\s+/) : [];
-    if (words.length === 0)
-      return alert("Please enter some words to split into syllables.");
-    if (words.length > maxWords) return;
+ const getSyllables = async () => {
+  const text = syllableInput.trim();
+  if (!text) return alert("Please enter some words to split into syllables.");
 
-    try {
-      const res = await fetch("/split", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-      const data = await res.json();
-      if (!res.ok) return setErrorMsg(data.error || "Something went wrong.");
-      setSyllableOutput(data.output);
-    } catch (err) {
-      setErrorMsg("Network error. Please try again later.");
-    }
-  };
+  try {
+    const res = await fetch("http://127.0.0.1:8000/split/split", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    if (!res.ok) return setErrorMsg(data.error || "Something went wrong.");
+    setSyllableOutput(data.output);
+  } catch (err) {
+    setErrorMsg("Network error. Please try again later.");
+  }
+};
 
   useEffect(() => {
     updateLineWordCount(lineInput);

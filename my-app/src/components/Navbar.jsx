@@ -60,16 +60,7 @@ export default function Navbar() {
               {/* Right side */}
               <div className="flex items-center space-x-4">
                 {/* Dark/Light mode toggle */}
-                <button
-                  onClick={toggleDarkMode}
-                  className="p-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white"
-                >
-                  {darkMode ? (
-                    <SunIcon className="h-6 w-6 text-yellow-400" />
-                  ) : (
-                    <MoonIcon className="h-6 w-6 text-gray-200" />
-                  )}
-                </button>
+                
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative">
