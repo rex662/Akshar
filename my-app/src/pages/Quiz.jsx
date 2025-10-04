@@ -22,7 +22,7 @@ const questions = [
       { text: "Constant trouble", emoji: "😣", score: 3 },
     ],
   },
-    {
+  {
     question: "Does the child mix up letters like b/d or p/q while reading or writing?",
     options: [
       { text: "Never", emoji: "🙅", score: 0 },
@@ -59,8 +59,6 @@ const questions = [
     ],
   },
 ];
-  
-
 
 const getResultMessage = (score) => {
   if (score <= 6) return "🟢 Unlikely Dyslexia – No significant signs.";
@@ -81,12 +79,58 @@ export default function DyslexiaQuiz() {
     setAnswers(newAnswers);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (answers.includes(null)) {
       alert("Please answer all questions before submitting.");
       return;
     }
+
     setSubmitted(true);
+
+    // Calculate score
+    const totalScore = answers.reduce(
+      (acc, curr, i) => (curr !== null ? acc + questions[i].options[curr].score : acc),
+      0
+    );
+
+    const result = getResultMessage(totalScore);
+
+    // Guest ID handling
+    let guestId = localStorage.getItem("guestId");
+    if (!guestId) {
+      guestId = crypto.randomUUID();
+      localStorage.setItem("guestId", guestId);
+    }
+
+    // Send data to backend
+    try {
+      const response = await fetch("http://localhost:5000/api/tests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: null, // null for guest
+          guestId: guestId,
+          testType: "quiz",
+          data: {
+            score: totalScore,
+            totalQuestions: questions.length,
+            answers: answers.map((ans, i) => ({
+              question: questions[i].question,
+              selectedOption: ans !== null ? questions[i].options[ans].text : null,
+              score: ans !== null ? questions[i].options[ans].score : 0,
+            })),
+            overallRisk: result,
+          },
+          isGuest: true,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to save quiz results");
+      const resData = await response.json();
+      console.log("Quiz saved:", resData);
+    } catch (err) {
+      console.error("Error sending quiz to DB:", err);
+    }
   };
 
   const totalScore = answers.reduce(
@@ -97,10 +141,7 @@ export default function DyslexiaQuiz() {
   const result = getResultMessage(totalScore);
 
   return (
-    <div
-      className="bg-[#E0F7FA] font-inter min-h-screen relative"
-      
-    >
+    <div className="bg-[#E0F7FA] font-inter min-h-screen relative">
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -215,17 +256,16 @@ export default function DyslexiaQuiz() {
               >
                 Retake Quiz 🔄
               </button>
-
-              
             </div>
           </div>
         )}
+
         <button
-                onClick={() => navigate("/sol")}
-                className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2"
-              >
-                Next Page <span className="material-icons">arrow_forward_ios</span>
-              </button>
+          onClick={() => navigate("/sol")}
+          className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2"
+        >
+          Next Page <span className="material-icons">arrow_forward_ios</span>
+        </button>
       </main>
     </div>
   );

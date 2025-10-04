@@ -17,17 +17,16 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const [darkMode, setDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // ✅ Load user from localStorage
+  // Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  // ✅ Sync across tabs
+  // Sync across tabs
   useEffect(() => {
     const handleStorageChange = () => {
       const storedUser = localStorage.getItem("user");
@@ -37,11 +36,8 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  
-
   const handleSignOut = () => {
-    const confirmSignOut = window.confirm("Sign out and remove user data?");
-    if (!confirmSignOut) return;
+    if (!window.confirm("Sign out and remove user data?")) return;
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setUser(null);
@@ -67,9 +63,7 @@ export default function Navbar() {
                     key={item.name}
                     to={item.href}
                     className={classNames(
-                      item.current
-                        ? "bg-blue-900 text-white"
-                        : "text-gray-200 hover:bg-blue-700 hover:text-white",
+                      "text-gray-200 hover:bg-blue-700 hover:text-white",
                       "px-3 py-2 rounded-md text-md font-medium"
                     )}
                   >
@@ -78,7 +72,7 @@ export default function Navbar() {
                 ))}
               </div>
 
-              {/* Right side */}
+              {/* Right side menu */}
               <div className="flex items-center space-x-4">
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative">
@@ -118,6 +112,28 @@ export default function Navbar() {
                             </Link>
                           )}
                         </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => {
+                                // Create guest ID
+                                let guestId = localStorage.getItem("guestId");
+                                if (!guestId) {
+                                  guestId = crypto.randomUUID();
+                                  localStorage.setItem("guestId", guestId);
+                                }
+                                alert("Continuing as guest");
+                                navigate("/"); // Go to homepage
+                              }}
+                              className={classNames(
+                                active ? "bg-blue-700" : "",
+                                "block w-full text-left px-4 py-2 text-sm text-white"
+                              )}
+                            >
+                              Continue as Guest
+                            </button>
+                          )}
+                        </Menu.Item>
                       </>
                     ) : (
                       <Menu.Item>
@@ -141,11 +157,7 @@ export default function Navbar() {
                 <div className="sm:hidden">
                   <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-200 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
                     <span className="sr-only">Open main menu</span>
-                    {open ? (
-                      <XMarkIcon className="block h-6 w-6" />
-                    ) : (
-                      <Bars3Icon className="block h-6 w-6" />
-                    )}
+                    {open ? <XMarkIcon className="block h-6 w-6" /> : <Bars3Icon className="block h-6 w-6" />}
                   </Disclosure.Button>
                 </div>
               </div>
@@ -160,12 +172,7 @@ export default function Navbar() {
                   key={item.name}
                   as={Link}
                   to={item.href}
-                  className={classNames(
-                    item.current
-                      ? "bg-blue-900 text-white"
-                      : "text-gray-200 hover:bg-blue-700 hover:text-white",
-                    "block px-3 py-2 rounded-md text-base font-medium"
-                  )}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-200 hover:bg-blue-700 hover:text-white"
                 >
                   {item.name}
                 </Disclosure.Button>

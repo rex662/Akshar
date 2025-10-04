@@ -7,16 +7,22 @@ import { useNavigate } from "react-router-dom";
 
 const Handwriting = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
+
+  // Form states
   const [childName, setChildName] = useState("");
   const [file, setFile] = useState(null);
+
+  // Result states
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  // File selection
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
+  // Analyze handwriting
   const handleAnalyze = async () => {
     if (!file) {
       alert("Please upload your handwriting image first.");
@@ -25,15 +31,23 @@ const Handwriting = ({ theme, toggleTheme }) => {
 
     setLoading(true);
     setResult(null);
-    const referenceSentence = "the quick brown fox jumps over the lazy dog";
-const userName = childName || "Anonymous";
 
+    const referenceSentence = "the quick brown fox jumps over the lazy dog";
+    const userName = childName || "Anonymous";
+
+    // Guest mode: create guest ID if not present
+    let guestId = localStorage.getItem("guestId");
+    if (!guestId) {
+      guestId = crypto.randomUUID();
+      localStorage.setItem("guestId", guestId);
+    }
 
     try {
+      // Step 1: Send file to OCR endpoint
       const formData = new FormData();
       formData.append("file", file);
       formData.append("expected", referenceSentence);
-formData.append("name", userName);
+      formData.append("name", userName);
 
       const response = await fetch("http://localhost:8000/hand/hand", {
         method: "POST",
@@ -46,21 +60,28 @@ formData.append("name", userName);
       setResult(ocrData);
       setShowModal(true);
 
-      await fetch("http://localhost:8000/hand/generate-report", {
+      // Step 2: Send results to backend for storage
+      await fetch("http://localhost:5000/api/tests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: userName,
-          expected: ocrData.expected,
-          ocr_output: ocrData.ocr_output,
-          char_error_rate: ocrData.char_error_rate,
-          word_error_rate: ocrData.word_error_rate,
-          substitutions: ocrData.substitutions,
-          insertions: ocrData.insertions,
-          deletions: ocrData.deletions,
-          reversed_letters: ocrData.reversed_letters,
-          dysgraphia_risk: ocrData.dysgraphia_risk
-        })
+          userId: null, // null because guest
+          guestId: guestId, // guest identifier
+          testType: "handwriting",
+          data: {
+            name: userName,
+            expected: ocrData.expected,
+            ocr_output: ocrData.ocr_output,
+            char_error_rate: ocrData.char_error_rate,
+            word_error_rate: ocrData.word_error_rate,
+            substitutions: ocrData.substitutions,
+            insertions: ocrData.insertions,
+            deletions: ocrData.deletions,
+            reversed_letters: ocrData.reversed_letters,
+            dysgraphia_risk: ocrData.dysgraphia_risk,
+          },
+          isGuest: true,
+        }),
       });
     } catch (error) {
       console.error(error);
@@ -70,6 +91,7 @@ formData.append("name", userName);
     }
   };
 
+  // Download report locally
   const handleDownloadReport = () => {
     if (!result) return;
 
@@ -105,13 +127,12 @@ formData.append("name", userName);
         }}
       />
 
-      {/* Content */}
       <div className="relative z-10">
         <Navbar />
         <div className="flex items-center justify-center min-h-screen px-4 sm:px-6">
           <div className="book-container max-w-[90vw] h-auto">
             <div className="book" id="book">
-              {/* Page 1 */}
+              {/* Page 1: Enter name */}
               <div className="page left page--front" id="page1">
                 <div className="page-content text-center px-4 sm:px-6">
                   <div className="flex flex-col sm:flex-row items-center gap-4 mb-8">
@@ -143,7 +164,7 @@ formData.append("name", userName);
                 </div>
               </div>
 
-              {/* Page 2 */}
+              {/* Page 2: Upload & Analyze */}
               <div className="page right page--back" id="page2">
                 <div className="page-content text-center px-4 sm:px-6">
                   <h2 className="text-2xl sm:text-4xl font-bold font-storybook text-[var(--text-color)] mb-6">
@@ -153,7 +174,6 @@ formData.append("name", userName);
                     Upload a picture of your handwriting to see how you're doing.
                   </p>
 
-                  {/* THIS IS YOUR ORIGINAL BLOCK */}
                   <div className="mb-10 text-center w-full max-w-2xl mx-auto">
                     <label
                       htmlFor="reference-sentence"
@@ -168,7 +188,7 @@ formData.append("name", userName);
                     </div>
                   </div>
 
-                  {/* Upload + Analyze */}
+                  {/* Upload + Analyze buttons */}
                   <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4">
                     <label className="storybook-button bg-[var(--accent-color-3)] cursor-pointer">
                       <span className="material-icons">cloud_upload</span>
@@ -195,6 +215,7 @@ formData.append("name", userName);
           </div>
         </div>
 
+        {/* Navigate to Quiz */}
         <button
           onClick={() => navigate("/quiz")}
           className="page-turn-btn"
@@ -204,35 +225,33 @@ formData.append("name", userName);
         </button>
       </div>
 
-      {/* Modal Popup */}
+      {/* Modal for report */}
       {showModal && result && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-12">
           <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setShowModal(false)}></div>
 
           <div className="relative bg-white shadow-lg rounded-lg w-11/12 max-w-3xl p-6 overflow-y-auto max-h-[80vh]">
-            {/* REPORT CONTENT */}
+            {/* Header */}
             <div id="header">
               <h1>Dysgraphia Indicator Report</h1>
               <div className="subtitle">{new Date().toLocaleString()}</div>
             </div>
 
             {/* Risk */}
-           {/* Risk */}
-{(() => {
-  let riskClass = "low";
-  if (result.dysgraphia_risk?.includes("High")) riskClass = "high";
-  else if (result.dysgraphia_risk?.includes("Moderate")) riskClass = "moderate";
+            {(() => {
+              let riskClass = "low";
+              if (result.dysgraphia_risk?.includes("High")) riskClass = "high";
+              else if (result.dysgraphia_risk?.includes("Moderate")) riskClass = "moderate";
 
-  return (
-    <div className={`section highlight-${riskClass}`}>
-      <h2 className="section-title">Screening Result</h2>
-      <p className="prediction-text">{result.dysgraphia_risk || "Not Available"}</p>
-    </div>
-  );
-})()}
+              return (
+                <div className={`section highlight-${riskClass}`}>
+                  <h2 className="section-title">Screening Result</h2>
+                  <p className="prediction-text">{result.dysgraphia_risk || "Not Available"}</p>
+                </div>
+              );
+            })()}
 
-
-            {/* Sample Details */}
+            {/* Sample details */}
             <div className="section">
               <h2 className="section-title">Submitted Sample Details</h2>
               <strong>Reference Sentence:</strong>
@@ -241,7 +260,7 @@ formData.append("name", userName);
               <p className="text-block">{result.ocr_output}</p>
             </div>
 
-            {/* Handwriting Metrics */}
+            {/* Metrics */}
             <div className="section">
               <h2 className="section-title">Handwriting Analysis Metrics</h2>
               <ul className="stats-grid">
@@ -272,12 +291,14 @@ formData.append("name", userName);
               </ul>
             </div>
 
+            {/* Footer */}
             <div id="footer">
               <div className="disclaimer">
-                <strong>Disclaimer:</strong> This report is generated by an automated tool designed to identify potential indicators associated with dysgraphia. It is not a substitute for a professional diagnosis. The results should be used for informational and screening purposes only.
+                <strong>Disclaimer:</strong> This report is generated by an automated tool. It is not a substitute for professional diagnosis.
               </div>
             </div>
 
+            {/* Download / Close buttons */}
             <div className="flex justify-end gap-2 mt-4">
               <button className="storybook-button bg-blue-600 text-white" onClick={handleDownloadReport}>
                 Download Report

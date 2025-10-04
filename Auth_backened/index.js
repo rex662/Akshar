@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
+const testRoutes = require("./routes/testRoutes");
 
 const app = express();
 
@@ -12,6 +13,9 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/api/tests", testRoutes);
+
+
 
 // Routes
 app.use("/api/auth", authRoutes);
