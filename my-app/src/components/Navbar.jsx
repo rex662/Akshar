@@ -1,31 +1,52 @@
-import { Disclosure, Menu } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import profilepic from '../assets/profilepic.jpg';
-import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { Disclosure, Menu } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Link, useNavigate } from "react-router-dom";
+import profilepic from "../assets/profilepic.jpg";
 
 const navigation = [
-  { name: 'Home', href: '/', current: false },
-  { name: 'Playbook 1', href: '/test', current: true },
-  { name: 'Playbook 2', href: '/handwriting', current: true },
-  { name: 'Enhancer', href: '/sol', current: true },
-  { name: 'QuirkQuest', href: '/quiz', current: true },
+  { name: "Home", href: "/" },
+  { name: "Playbook 1", href: "/test" },
+  { name: "Playbook 2", href: "/handwriting" },
+  { name: "QuirkQuest", href: "/quiz" },
+  { name: "Enhancer", href: "/sol" },
 ];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
-  const [darkMode, setDarkMode] = React.useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    if (!darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+  // ✅ Load user from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  // ✅ Sync across tabs
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  
+
+  const handleSignOut = () => {
+    const confirmSignOut = window.confirm("Sign out and remove user data?");
+    if (!confirmSignOut) return;
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUser(null);
+    alert("Signed out successfully!");
+    navigate("/login");
   };
 
   return (
@@ -47,9 +68,9 @@ export default function Navbar() {
                     to={item.href}
                     className={classNames(
                       item.current
-                        ? 'bg-blue-900 text-white'
-                        : 'text-gray-200 hover:bg-blue-700 hover:text-white',
-                      'px-3 py-2 rounded-md text-md font-medium'
+                        ? "bg-blue-900 text-white"
+                        : "text-gray-200 hover:bg-blue-700 hover:text-white",
+                      "px-3 py-2 rounded-md text-md font-medium"
                     )}
                   >
                     {item.name}
@@ -59,9 +80,6 @@ export default function Navbar() {
 
               {/* Right side */}
               <div className="flex items-center space-x-4">
-                {/* Dark/Light mode toggle */}
-                
-
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative">
                   <Menu.Button className="flex rounded-full focus:outline-none focus:ring-2 focus:ring-white">
@@ -72,31 +90,50 @@ export default function Navbar() {
                     />
                   </Menu.Button>
                   <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right bg-gray-800 rounded-md shadow-lg py-1 focus:outline-none z-50">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          to="/profile"
-                          className={classNames(
-                            active ? 'bg-blue-700' : '',
-                            'block px-4 py-2 text-sm text-white'
+                    {!user ? (
+                      <>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/login"
+                              className={classNames(
+                                active ? "bg-blue-700" : "",
+                                "block px-4 py-2 text-sm text-white"
+                              )}
+                            >
+                              Login
+                            </Link>
                           )}
-                        >
-                          Your Profile
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          className={classNames(
-                            active ? 'bg-blue-700' : '',
-                            'block w-full text-left px-4 py-2 text-sm text-white'
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/signup"
+                              className={classNames(
+                                active ? "bg-blue-700" : "",
+                                "block px-4 py-2 text-sm text-white"
+                              )}
+                            >
+                              Sign Up
+                            </Link>
                           )}
-                        >
-                          Sign Out
-                        </button>
-                      )}
-                    </Menu.Item>
+                        </Menu.Item>
+                      </>
+                    ) : (
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={handleSignOut}
+                            className={classNames(
+                              active ? "bg-blue-700" : "",
+                              "block w-full text-left px-4 py-2 text-sm text-white"
+                            )}
+                          >
+                            Sign Out
+                          </button>
+                        )}
+                      </Menu.Item>
+                    )}
                   </Menu.Items>
                 </Menu>
 
@@ -125,9 +162,9 @@ export default function Navbar() {
                   to={item.href}
                   className={classNames(
                     item.current
-                      ? 'bg-blue-900 text-white'
-                      : 'text-gray-200 hover:bg-blue-700 hover:text-white',
-                    'block px-3 py-2 rounded-md text-base font-medium'
+                      ? "bg-blue-900 text-white"
+                      : "text-gray-200 hover:bg-blue-700 hover:text-white",
+                    "block px-3 py-2 rounded-md text-base font-medium"
                   )}
                 >
                   {item.name}

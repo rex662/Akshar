@@ -11,57 +11,79 @@ export default function Ab() {
       {/* Content Container */}
       <div className="w-full px-4 sm:px-6 py-12 overflow-y-auto h-[800px]">
         <div className="bg-[#fdf5e6] border border-[#d2b48c] shadow-[0_4px_20px_rgba(0,0,0,0.2)] rounded-xl p-6 sm:p-8 font-serif text-[#5c3e2a] leading-relaxed tracking-wide max-w-8xl mx-auto text-base sm:text-lg space-y-6">
+          
           <p>
-            Dyslexia falls under the umbrella of <strong>“specific learning disorder.”</strong> That disorder has three main subtypes: <strong>Reading (dyslexia)</strong>, <strong>Writing (dysgraphia)</strong>, and <strong>Math (dyscalculia)</strong>.
+            Dyslexia is a specific learning disorder that primarily affects reading and language processing. 
+            It does not reflect a child’s intelligence or motivation, but rather the way their brain processes written 
+            and spoken language. Children and adults with dyslexia often struggle with matching letters to sounds, 
+            blending sounds into words, and recognizing words quickly. 
           </p>
 
-          <p>As a child gets older, dyslexia can often look like:</p>
+          <p>
+            <strong>Example:</strong>  
+            Imagine a child named Aarav who is bright and curious, loves building with blocks, and asks many 
+            thoughtful questions. However, when it comes to reading, Aarav finds it difficult to recognize the 
+            difference between letters like “b” and “d.” When he tries to read the word <em>“bat”</em>, 
+            he might confuse it with <em>“dat”</em> or read it as <em>“tab.”</em>  
+            Even though Aarav is intelligent, his reading skills do not match his thinking ability. This gap 
+            often leads to frustration and self-doubt if not supported early on.  
+          </p>
+
+          <p>
+            <strong>Biological Explanation:</strong>  
+            Dyslexia has its roots in how the brain is wired. Research using brain imaging has shown that 
+            people with dyslexia process language in different areas of the brain compared to typical readers. 
+            Normally, reading involves three main regions of the left side of the brain:
+          </p>
+
           <ul className="list-disc list-inside space-y-1 pl-4">
-            <li>Difficulty spelling simple words.</li>
-            <li>Trouble learning the names of letters.</li>
-            <li>Problems telling apart letters with similar shapes, such as “d” and “b” or “p” and “q.”</li>
-            <li>Trouble rhyming.</li>
-            <li>Reluctance to read aloud in class.</li>
-            <li>Trouble sounding out new words.</li>
-            <li>Trouble associating sounds with letters or parts of words.</li>
-            <li>Trouble learning how sounds go together.</li>
-            <li>Mixing up the position of sounds in a word.</li>
+            <li>
+              <strong>Broca’s Area (frontal lobe):</strong> Involved in speech production and analyzing words.
+            </li>
+            <li>
+              <strong>Parieto-Temporal Region:</strong> Helps in word analysis, breaking words into smaller sounds.
+            </li>
+            <li>
+              <strong>Occipito-Temporal Region:</strong> Responsible for rapid word recognition and fluent reading.
+            </li>
           </ul>
 
           <p>
-            Having one of the above doesn’t mean a person has dyslexia, but if they’re having trouble learning the basic skills for reading, then screening and testing is a good way to see if they need specialized help.
+            In people with dyslexia, the parieto-temporal and occipito-temporal regions are often underactive. 
+            Instead, they may rely more on the frontal regions, which makes reading slower and more effortful. 
+            This biological difference explains why children with dyslexia take longer to process words 
+            and why traditional reading methods can feel so challenging for them.
           </p>
 
           <p>
-            Dyslexia affects an estimated <strong>10–20%</strong> of the global population. In India alone, over <strong>200 million</strong> individuals, including <strong>35 million students</strong>, live with this learning disability. However, a significant number, around <strong>1 in 20</strong>, remain unidentified.
-          </p>
-
-          <p>
-            <strong>Standardized assessments:</strong> Formal assessments like the Comprehensive Test of Phonological Processing (CTOPP) or the Woodcock-Johnson Tests of Achievement can be used to evaluate specific skills related to dyslexia, such as phonological awareness and rapid naming.
+            Scientists also believe genetics play a strong role, as dyslexia tends to run in families. 
+            Differences in how brain cells (neurons) connect and communicate during reading and language tasks 
+            further contribute to these challenges. Importantly, these differences are not a “defect” 
+            but simply a variation in brain functioning. With the right strategies, 
+            like phonics-based instruction and multisensory learning, individuals with dyslexia 
+            can learn to read effectively and thrive academically.
           </p>
 
           {/* Myths vs Facts Section */}
           <div className="mt-10 w-full flex flex-col items-center">
-            <h2 className="text-blue-800 text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4">
-              MYTHS VS FACTS
-            </h2>
-            <div className="w-1/2 rounded-xl shadow-md p-6 sm:p-8  space-y-6">
-              <p className="text-gray-900 text-base sm:text-lg md:text-xl font-semibold leading-relaxed">
-                ❌ <span className="text-red-600 font-bold">Myth:</span> Dyslexia means low intelligence
-                <br />✅ <span className="text-green-600 font-bold">Fact:</span> Many dyslexic individuals have average or above-average intelligence.
-              </p>
-              <p className="text-gray-900 text-base sm:text-lg md:text-xl font-semibold leading-relaxed">
-                ❌ <span className="text-red-600 font-bold">Myth:</span> Children just need to try harder
-                <br />✅ <span className="text-green-600 font-bold">Fact:</span> Dyslexia is neurological, not laziness.
-              </p>
-              <p className="text-gray-900 text-base sm:text-lg md:text-xl font-semibold leading-relaxed">
-                ❌ <span className="text-red-600 font-bold">Myth:</span> Dyslexia can’t be managed
-                <br />✅ <span className="text-green-600 font-bold">Fact:</span> With support and tools, people with dyslexia excel in school and beyond.
-              </p>
-            </div>
+            <p>
+              Our suite of tools is designed to make dyslexia screening and support more 
+              <strong> accessible, accurate, and child-friendly</strong>. From analyzing eye 
+              movements and speech patterns, to studying handwriting and providing 
+              interactive quizzes, each tool offers a unique way to uncover learning 
+              differences. Paired with our reading companion, these solutions aim to 
+              build <strong>confidence, clarity, and independence</strong> in every learner’s 
+              journey.
+            </p>
           </div>
-
-          {/* Learn More Button */}
+ <div className="w-full flex justify-center mt-8">
+            <Link
+              to="/test"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition"
+            >
+             Get Started
+            </Link>
+          </div>
         </div>
       </div>
     </div>

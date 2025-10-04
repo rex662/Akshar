@@ -9,7 +9,8 @@ import DyslexiaQuiz from './pages/Quiz';
 import DyslexiaSupport from './pages/Solution';
 import AboutDyslexia from './pages/About';
 import Ab from "./pages/about2";
-
+import Login from "./components/Login";
+import Signup from './components/Signup';
 const App = () => {
   return (
     <BrowserRouter>
@@ -21,6 +22,8 @@ const App = () => {
         <Route path="/sol" element={<DyslexiaSupport />} />
         <Route path="/about" element={<AboutDyslexia />} />
         <Route path="/ab" element={<Ab />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );

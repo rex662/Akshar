@@ -29,7 +29,7 @@ const HOME = () => {
         <section id="about-us" className="px-6 py-8">
           <h1
               className="floating-text text-black font-bold text-center uppercase 
-             text-[80px] sm:text-[100px] md:text-[120px] lg:text-[160px] 
+             text-[80px] sm:text-[80px] md:text-[100px] lg:text-[120px] 
              leading-tight tracking-tight 
              [text-shadow:_2px_2px_2px_black,_0_0_10px_rgba(0,0,0,0.2)]"
             > AKSHAR MITRA
@@ -110,7 +110,7 @@ const HOME = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
                 href="/quiz"
               >
-                Quirktest
+                Quirk quest
               </a>
             </div>
 
@@ -160,11 +160,11 @@ const HOME = () => {
 
         {/* Footer */}
         <footer className="bg-blue-800 py-6 text-white mt-8">
-          <div className="max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-xs sm:text-sm text-center md:text-left">
+          <div className="max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row items-center  justify-center gap-4">
+            <span className="text-xs sm:text-sm text-center md:text-center">
               © 2025 Akshar Mitr. All Rights Reserved.
             </span>
-            <ul className="flex flex-wrap justify-center md:justify-end gap-4 text-xs sm:text-sm font-medium">
+            {/* <ul className="flex flex-wrap justify-center md:justify-end gap-4 text-xs sm:text-sm font-medium">
               <li>
                 <a href="#" className="hover:underline">
                   About
@@ -183,9 +183,9 @@ const HOME = () => {
               <li>
                 <a href="#" className="hover:underline">
                   Contact
-                </a>
-              </li>
-            </ul>
+                </a> */}
+              {/* </li>
+            </ul> */}
           </div>
         </footer>
       </div>
