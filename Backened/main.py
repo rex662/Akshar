@@ -24,7 +24,7 @@ app.add_middleware(
 app.include_router(eye_router, prefix="/eye", tags=["Eye Tracking"])
 app.include_router(speech_router, prefix="/speech", tags=["Speech Analysis"])
 app.mount("/hand", WSGIMiddleware(handwriting_flask_app))
-app.include_router(syllable_router,prefix="/split", tags=["Spyllable Analysis"])
+app.include_router(syllable_router,prefix="/split", tags=["Syllable Analysis"])
 # ── Combined Endpoint ──────────────────────────────────────────────
 @app.post("/combined-result")
 async def combined_result(req: Request):

@@ -21,9 +21,21 @@ const saveTestResults = async (req, res) => {
 
     // -------------------- Handle Eye + Speech Results --------------------
     if (testType === "eyeSpeech") {
-      testEntry.eyeTracking = eyeResult || {};
-      testEntry.speechAnalysis = speechResult || {};
+      testEntry.eyeTracking = {
+        ...eyeResult,
+        dyslexiaRisk: eyeResult?.label || "Pending",
+        riskScore: eyeResult?.score || 0
+      };
+console.log("speechResult:", speechResult);
+
+      testEntry.speechAnalysis = {
+        ...speechResult,
+        dyslexiaRisk: speechResult?.label || "Pending",
+        riskScore: speechResult?.score || 0
+      };
+
       testEntry.overallRisk = combinedResult?.label || "Pending";
+
     }
 
     // -------------------- Handle Handwriting Results --------------------
