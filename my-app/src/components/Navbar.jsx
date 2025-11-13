@@ -46,7 +46,7 @@ export default function Navbar() {
   };
 
   return (
-    <Disclosure as="nav" className="bg-blue-800 relative">
+    <Disclosure as="nav" className=" relative" style={{ background:'#d29b71ff'}}>
       {({ open }) => (
         <>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,8 +63,7 @@ export default function Navbar() {
                     key={item.name}
                     to={item.href}
                     className={classNames(
-                      "text-gray-200 hover:bg-blue-700 hover:text-white",
-                      "px-3 py-2 rounded-md text-md font-medium"
+                      "px-3 py-2 rounded-md text-xl font-bold text-white hover:bg-amber-800 transition-colors duration-200"
                     )}
                   >
                     {item.name}

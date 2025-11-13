@@ -14,14 +14,7 @@
   --radius-full: 9999px;
 }
 
-/* Light Mode
-body {
-  background-color: var(--color-background-light);
-  color: #333;
-  font-family: var(--font-display);
-} */
 
-/* Dark Mode (when .dark class is applied to <body>) */
 body.dark {
   background-color: var(--color-background-dark);
   color: #f6f7f8;

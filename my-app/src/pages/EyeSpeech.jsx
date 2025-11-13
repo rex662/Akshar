@@ -250,19 +250,16 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
   // ------------------- JSX --------------------
   return (
     <div className="flex flex-col">
+      <Navbar/>
       <div
         style={{
-          backgroundColor: "#e3f2fd",
-          backgroundImage: `
-            repeating-linear-gradient(to right,#bbdefb,#bbdefb 1px,transparent 1px,transparent 100%),
-            repeating-linear-gradient(to bottom,#bbdefb,#bbdefb 1px,transparent 1px,transparent 32px)
-          `,
+          backgroundColor: "#F7F5F2",
           backgroundSize: "32px 32px",
         }}
-        className="playbook-bg min-h-screen p-6 font-sans pt-[30px] gap-4 dark:bg-zinc-800 flex flex-col justify-center items-center"
+        className="min-h-screen p-6 font-sans pt-[30px] gap-4 dark:bg-zinc-800 flex flex-col justify-center items-center"
       >
         <div
-          className="floating-card w-full max-w-9xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 relative min-h-fit lg:min-h-[30vh]"
+          className=" w-full max-w-9xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 relative min-h-fit lg:min-h-[30vh]"
           style={{
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             borderRadius: "12px",
@@ -270,8 +267,8 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
           }}
         >
           {/* Left Side */}
-          <div className="floating w-full position-relative mx-auto playbook-binding">
-            <div className="space-y-6 bg-white p-6 sm:p-8 md:p-10 flex flex-col rounded-2xl shadow-lg shadow-gray-700 gap-4 flex-grow transition-all hover:shadow-2xl h-full">
+          <div className=" w-full position-relative mx-auto playbook-binding">
+            <div className="space-y-6 bg-[#fef9e2] p-6 sm:p-8 md:p-10 flex flex-col rounded-2xl shadow-lg shadow-gray-700 gap-4 flex-grow transition-all hover:shadow-2xl h-full">
               <h2 className="text-center text-4xl md:text-6xl font-bold text-blue-600 mb-4" style={{ fontFamily: "Roboto, sans-serif" }}>MY PLAYBOOK</h2>
               <nav className="flex justify-center space-x-2 sm:space-x-4 mb-8">
                 <a className="overflow-hidden [clip-path:polygon(0_0,100%_0,100%_85%,85%_100%,0_100%,0%_85%)] bg-blue-100 text-blue-800 px-4 py-2 text-lg font-bold rounded-t-lg hover:bg-blue-200 transition" href="/">Home</a>
@@ -318,7 +315,7 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
                     The quick brown fox jumps over the lazy dog.
                   </strong>
                 </p>
-                <button onClick={startRecording} disabled={recordingSpeech} className={`transition-all hover:shadow-xl text-white text-xl px-6 py-3 rounded-xl shadow-lg cursor-pointer ${recordingSpeech ? "bg-red-500" : "bg-yellow-500 hover:bg-yellow-600"} flex items-center gap-2 justify-center`}>
+                <button onClick={startRecording} disabled={recordingSpeech} className={`transition-all hover:shadow-xl text-white text-xl px-6 py-3 rounded-xl shadow-lg cursor-pointer ${recordingSpeech ? "bg-red-500" : "bg-[#CC9966] hover:bg-amber-800 "} flex items-center gap-2 justify-center`}>
                   <span className="material-symbols-outlined">{recordingSpeech ? "mic_off" : "mic"}</span>
                   {recordingSpeech ? "Recording..." : "Start Reading (10s)"}
                 </button>
@@ -337,8 +334,8 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
           <div className="hidden lg:block absolute top-0 bottom-0 left-1/2 w-6 bg-gray-300 pointer-events-none" style={{ transform: "translateX(-50%)", backgroundImage: "linear-gradient(to bottom, #17151586 50%, transparent 50%)", backgroundSize: "4px 24px" }}></div>
 
           {/* Right Side */}
-          <div className="w-full transition-all hover:shadow-2xl floating bg-white p-6 sm:p-8 md:p-10 flex flex-col rounded-2xl shadow-lg shadow-gray-700 gap-4 flex-grow h-full">
-            <div className="space-y-6 bg-green-50 p-6 rounded-xl border border-green-200 text-gray-700 flex-grow">
+          <div className="w-full transition-all hover:shadow-2xl floating bg-[#fef9e2] p-6 sm:p-8 md:p-10 flex flex-col rounded-2xl shadow-lg shadow-gray-700 gap-4 flex-grow h-full">
+            <div className="space-y-6 bg-gray-300 p-6 rounded-xl border border-green-200 text-gray-700 flex-grow">
               <h2 className="text-3xl font-bold mb-4 flex items-center gap-4 text-green-700">
                 <span className="material-symbols-outlined text-4xl">check_circle</span>
                 Your Progress & Results
@@ -361,7 +358,7 @@ const EyeSpeech = ({ theme, toggleTheme }) => {
                   Recalculate Combined Result
                 </button>
               </div>
-              <a href="/handwriting" className="ml-5 bg-green-600 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg transition">Playbook2</a>
+              <a href="/handwriting" className="ml-5 bg-[#CC9966] hover:bg-amber-800 text-white font-semibold px-6 py-3 rounded-lg transition">Playbook2</a>
             </div>
           </div>
         </div>
