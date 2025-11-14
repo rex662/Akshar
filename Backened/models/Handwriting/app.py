@@ -1,62 +1,42 @@
-from flask import send_file, render_template_string
+from flask import Flask, request, jsonify, render_template, send_file
 from xhtml2pdf import pisa
 import io
 import datetime
-from flask import Flask, request, jsonify, render_template
-from PIL import Image
-import easyocr
-import difflib
+from werkzeug.utils import secure_filename
 import os
 import unicodedata
-from werkzeug.utils import secure_filename
+import difflib
+import easyocr
 
 app = Flask(__name__)
-# Initialize the OCR reader
+
+# Initialize OCR reader
 reader = easyocr.Reader(['en'])
 
 # Define common letter reversal pairs
 REVERSAL_PAIRS = [('b', 'd'), ('d', 'b'), ('p', 'q'), ('q', 'p')]
 
 def normalize(text):
-    """Normalize text to a common form for comparison."""
     return unicodedata.normalize('NFKC', text.lower())
 
 def count_reversals(expected, actual):
-    """Count the occurrences of defined letter reversals."""
     return sum(1 for a, b in zip(expected, actual) if (a, b) in REVERSAL_PAIRS)
 
 def predict_dysgraphia(subs, inserts, deletes, reversals, cer, wer):
-    """
-    Predicts the likelihood of dysgraphia based on error metrics.
-    Thresholds are adjusted for the short, fixed sentence.
-    """
     score = 0
-
-    # Score based on Character Error Rate (CER)
     if cer > 0.25: score += 2
     elif cer > 0.15: score += 1
-
-    # Score based on Word Error Rate (WER)
     if wer > 0.35: score += 2
     elif wer > 0.20: score += 1
-
-    # Score based on substitutions
     if subs > 4: score += 2
     elif subs > 2: score += 1
-
-    # Score based on insertions
     if inserts > 3: score += 2
     elif inserts > 1: score += 1
-
-    # Score based on deletions
     if deletes > 3: score += 2
     elif deletes > 1: score += 1
-    
-    # Score based on letter reversals (a strong indicator)
     if reversals >= 2: score += 2
     elif reversals >= 1: score += 1
 
-    # Determine final prediction based on the total score
     if score >= 6:
         return "High likelihood of dysgraphia (🔥) – Recommend detailed screening."
     elif score >= 3:
@@ -65,7 +45,6 @@ def predict_dysgraphia(subs, inserts, deletes, reversals, cer, wer):
         return "Low likelihood (✅) – No significant indicators found."
 
 def calculate_stats(expected, actual):
-    """Calculates all statistics by comparing expected and actual text."""
     expected_norm = normalize(expected)
     actual_norm = normalize(actual)
     matcher = difflib.SequenceMatcher(None, expected_norm, actual_norm)
@@ -73,7 +52,6 @@ def calculate_stats(expected, actual):
     comparison_html = ""
     subs, inserts, deletes = 0, 0, 0
 
-    # Generate an HTML visualization of the comparison
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
         expected_chunk = expected[i1:i2]
         actual_chunk = actual[j1:j2]
@@ -110,12 +88,10 @@ def analyze_handwriting():
     if not file or not expected:
         return jsonify({"error": "File and expected sentence required"}), 400
 
-    # Save the uploaded file temporarily
     filename = secure_filename(file.filename)
     temp_path = os.path.join("temp_" + filename)
     file.save(temp_path)
 
-    # OCR
     ocr_results = reader.readtext(temp_path, detail=0)
     os.remove(temp_path)
 
@@ -123,76 +99,33 @@ def analyze_handwriting():
     if not actual:
         return jsonify({"error": "OCR failed to recognize text"}), 400
 
-    # Calculate metrics
     stats = calculate_stats(expected, actual)
-
-    # Return all data for the frontend / report
-    result = {
-        "name": name,
-        "expected": expected,
-        "ocr_output": actual,
-        **stats
-    }
+    result = {"name": name, "expected": expected, "ocr_output": actual, **stats}
 
     return jsonify(result)
 
-
-@app.route('/ocr-compare', methods=['POST'])
-def ocr_compare():
-    """Handles the image upload, OCR, and analysis."""
-    image = request.files.get('image')
-    expected = request.form.get('expected', '').strip()
-
-    if not image or not expected:
-        return jsonify({'error': 'Missing image or expected sentence'}), 400
-
-    try:
-        filename = secure_filename(image.filename)
-        temp_path = os.path.join("temp_" + filename)
-        image.save(temp_path)
-
-        # Perform OCR on the saved image
-        results = reader.readtext(temp_path, detail=0)
-        os.remove(temp_path)
-
-        actual = " ".join(results).strip()
-        if not actual:
-            return jsonify({'error': 'OCR failed to recognize any text from the image.'}), 400
-
-        stats = calculate_stats(expected, actual)
-
-        return jsonify({
-            "expected": expected,
-            "ocr_output": actual,
-            **stats
-        })
-
-    except Exception as e:
-        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
-    
 @app.route('/generate-report', methods=['POST'])
 def generate_report():
-    """Generates a PDF report from the analysis data."""
     data = request.json
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    # Render the HTML template with the data
+    # Render HTML template
     html = render_template('report_template.html', **data, timestamp=timestamp)
-    
-    # Create a unique filename for the report
-    report_dir = 'static/reports'
-    os.makedirs(report_dir, exist_ok=True)
-    report_filename = os.path.join(report_dir, f"report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf")
-    
-    # Convert the rendered HTML to a PDF file
-    with open(report_filename, "w+b") as pdf_file:
-        pisa_status = pisa.CreatePDF(io.StringIO(html), dest=pdf_file)
-    
+
+    # Generate PDF in memory
+    pdf_file = io.BytesIO()
+    pisa_status = pisa.CreatePDF(io.StringIO(html), dest=pdf_file)
+    pdf_file.seek(0)
+
     if pisa_status.err:
         return jsonify({"error": "PDF generation failed"}), 500
-    
-    return jsonify({ "download_url": f"/{report_filename}" })
-
-
+    return send_file(
+        pdf_file,
+        as_attachment=True,
+        download_name=f"{data.get('name', 'handwriting')}_report.pdf",
+        mimetype='application/pdf'
+    )
+    # Return PDF as file download
+  
 if __name__ == '__main__':
     app.run(debug=True)

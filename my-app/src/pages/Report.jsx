@@ -1,7 +1,7 @@
 // src/components/HandwritingReport.jsx
 import React from "react";
 
-const HandwritingReport = ({ result, timestamp }) => {
+const Report = ({ result, timestamp }) => {
   if (!result) return null;
 
   // Determine risk class
@@ -69,4 +69,4 @@ const HandwritingReport = ({ result, timestamp }) => {
   );
 };
 
-export default HandwritingReport;
+export default Report;
