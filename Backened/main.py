@@ -8,6 +8,7 @@ from models.Eye_track.app import eye_router, get_eye_result
 from models.speech.app import speech_router
 from models.Handwriting.app import app as handwriting_flask_app
 from models.Syllable import syllable_router
+#from your_module import router
 # from Game.backend_test import adaptive_flask_app
 
 # Initialize FastAPI app
@@ -58,4 +59,5 @@ async def combined_result(req: Request):
 
 # ── Run using Uvicorn ─────────────────────────────────────────────
 # Command: uvicorn Backend.main:app --reload
-
+"""app = FastAPI()
+app.include_router(router)"""
