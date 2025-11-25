@@ -36,14 +36,14 @@ const cards = [
     link: "/sol",
     button: "Enhancer",
   },
-  {
-  title: "Emotion Explorer (Game)",
-  description:
-    "Play an interactive game that detects emotions from facial expressions and helps you understand feelings better.",
-  img: "https://images.unsplash.com/photo-1533089860892-a7c3b5d5b83d?w=1000&auto=format&fit=crop",
-  link: "/emotion-game",
-  button: "Play Now",
-}
+//   {
+//   title: "Emotion Explorer (Game)",
+//   description:
+//     "Play an interactive game that detects emotions from facial expressions and helps you understand feelings better.",
+//   img: "https://images.unsplash.com/photo-1533089860892-a7c3b5d5b83d?w=1000&auto=format&fit=crop",
+//   link: "/emotion-game",
+//   button: "Play Now",
+// }
 
 ];
 
