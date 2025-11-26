@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.wsgi import WSGIMiddleware
 
 # Routers
-from models.Eye_track.app import eye_router
-from models.speech.app import speech_router
-from models.Handwriting.app import app as handwriting_flask_app
-from models.Syllable import syllable_router
+from Backened.models.Eye_track.app import eye_router
+from Backened.models.speech.app import speech_router
+from Backened.models.Handwriting.app import app as handwriting_flask_app
+from Backened.models.Syllable import syllable_router
 
 # -------------------------
 # FastAPI APP
