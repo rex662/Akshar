@@ -68,6 +68,7 @@ const getResultMessage = (score) => {
 };
 
 export default function DyslexiaQuiz() {
+  const REACT_API=process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -122,7 +123,7 @@ export default function DyslexiaQuiz() {
 
     // Send to backend
     try {
-      const response = await fetch("http://localhost:5000/api/tests", {
+      const response = await fetch(`${REACT_API}/api/tests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
