@@ -57,6 +57,8 @@ async def combined_result(req: Request):
     except Exception as e:
         return {"error": str(e)}
 
+#from fastapi import FastAPI
+app = FastAPI()
 # ── Run using Uvicorn ─────────────────────────────────────────────
 # Command: uvicorn Backend.main:app --reload
 if __name__ == "__main__":
