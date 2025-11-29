@@ -68,7 +68,7 @@ export default function DyslexiaSupport() {
   if (!text) return alert("Please enter some words to split into syllables.");
 
   try {
-    const res = await fetch(`${P_API}/split/split`, {
+    const res = await fetch(`${P_API}/split`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
